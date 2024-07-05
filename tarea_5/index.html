@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="styles.css" rel="stylesheet">
+    <title>Taller 6</title>
+</head>
+<body>
+    <div id="app" class="container">
+        <h1 class="is-size-2">Registro de Clientes</h1>
+        <div class="areat">
+            <h2>REGISTRO DE CLIENTE</h2>
+            <form class="clientes" id="clientes">
+                <table>
+                    <tr>
+                        <th>Cédula</th>
+                        <td><input type="tel" name="cedula" id="cedula" pattern="[0-9]{10}" required placeholder="Ingrese su cédula"></td>
+                    </tr>
+                    <tr>
+                        <th>Primer Apellido</th>
+                        <td><input type="text" name="apellido1" id="apellido1" pattern="^[a-zA-Z]+$" required placeholder="Ingrese su primer apellido"></td>
+                    </tr>
+                    <tr>
+                        <th>Primer Nombre</th>
+                        <td><input type="text" name="nombre1" id="nombre1" pattern="^[a-zA-Z]+$" required placeholder="Ingrese su primer nombre"></td>
+                    </tr>
+                    <tr>
+                        <th>Estado Civil</th>
+                        <td>
+                            <select name="estadocivil" id="estadocivil" required title="Seleccione su estado civil">
+                                <option value="soltero">Soltero(a)</option>
+                                <option value="casado">Casado(a)</option>
+                                <option value="divorciado">Divorciado(a)</option>
+                                <option value="viudo">Viudo(a)</option>
+                                <option value="union">Unión libre</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Sexo</th>
+                        <td>
+                            <label><input type="radio" name="sexo" value="hombre" required> Masculino</label>
+                            <label><input type="radio" name="sexo" value="mujer"> Femenino</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de Nacimiento</th>
+                        <td><input type="date" name="fechanacimiento" id="fechanacimiento" required title="Ingrese su fecha de nacimiento"></td>
+                    </tr>
+                    <tr>
+                        <th>Dirección</th>
+                        <td><input type="text" name="direccion" id="direccion" required placeholder="Ingrese su dirección"></td>
+                    </tr>
+                    <tr>
+                        <th>Celular</th>
+                        <td><input type="tel" name="celular" id="celular" pattern="[0-9]{10}" required placeholder="Ingrese su número de celular"></td>
+                    </tr>
+                    <tr>
+                        <th>Correo Electrónico</th>
+                        <td><input type="email" name="correo" id="correo" required placeholder="Ingrese su correo electrónico"></td>
+                    </tr>
+                </table>
+                <center><button class="botoncito" type="submit" id="submitBtn">Enviar Información</button></center>
+            </form>
+        </div>
+        <div class="areat">
+            <h2>Lista de Clientes</h2>
+            <ul id="clientesUl"></ul>
+        </div>
+    </div>
+    <script>
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+
+        function actualizarListaClientes() {
+            const clientesUl = document.getElementById("clientesUl");
+            clientesUl.innerHTML = "";
+            clientes.forEach((cliente, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `${index + 1}.<br>Cédula: ${cliente.cedula}<br>Dirección: ${cliente.direccion}<br>Apellidos: ${cliente.apellidos}<br>Nombres: ${cliente.nombres}<br>Teléfono: ${cliente.telefono}<br>Correo: ${cliente.correo}`;
+                clientesUl.appendChild(li);
+            });
+        }
+
+        document.getElementById("clientes").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const cedula = document.getElementById('cedula').value;
+            const apellido1 = document.getElementById('apellido1').value;
+            const nombre1 = document.getElementById('nombre1').value;
+            const estadocivil = document.getElementById('estadocivil').value;
+            const sexo = document.querySelector('input[name="sexo"]:checked').value;
+            const fechanacimiento = document.getElementById('fechanacimiento').value;
+            const direccion = document.getElementById('direccion').value;
+            const celular = document.getElementById('celular').value;
+            const correo = document.getElementById('correo').value;
+
+            // Validar nombre y apellido sin números
+            const nombreValido = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombre1);
+            const apellidoValido = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(apellido1);
+
+            // Validate cédula (10 digits)
+            if (!/^\d{10}$/.test(cedula)) {
+                alert('Por favor, ingrese un número de cédula válido (10 dígitos).');
+                return;
+            }
+
+            // Validate names (only letters and at least 2 characters)
+            if (!nombreValido) {
+                alert("El nombre solo puede contener letras.");
+                return;
+            }
+
+            if (!apellidoValido) {
+                alert("El apellido solo puede contener letras.");
+                return;
+            }
+
+            // Validate Estado Civil
+            if (!estadocivil) {
+                alert('Por favor, seleccione un estado civil.');
+                return;
+            }
+
+            // Validate Sexo
+            if (!sexo) {
+                alert('Por favor, seleccione un sexo.');
+                return;
+            }
+
+            // Validate Fecha de Nacimiento
+            if (!fechanacimiento) {
+                alert('Por favor, ingrese una fecha de nacimiento.');
+                return;
+            }
+
+            // Validate Dirección (only letters and spaces)
+            if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(direccion)) {
+                alert('Por favor, ingrese una dirección válida (solo letras y espacios).');
+                return;
+            }
+
+            // Validate Celular (10 digits)
+            if (!/^\d{10}$/.test(celular)) {
+                alert('Por favor, ingrese un número de celular válido (10 dígitos).');
+                return;
+            }
+
+            // Validate Correo Electrónico
+            if (!validateEmail(correo)) {
+                alert('Por favor, ingrese un correo electrónico válido.');
+                return;
+            }
+
+            const nuevoCliente = {
+                cedula: cedula,
+                direccion: direccion,
+                apellidos: apellido1,
+                nombres: nombre1,
+                telefono: celular,
+                correo: correo
+            };
+
+            clientes.push(nuevoCliente);
+            localStorage.setItem("clientes", JSON.stringify(clientes));
+            actualizarListaClientes();
+            this.reset();
+            alert("Cliente registrado correctamente");
+        });
+
+        function validateEmail(email) {
+            const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            return re.test(email);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('apellido1').addEventListener('input', function() {
+                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            });
+
+            document.getElementById('nombre1').addEventListener('input', function() {
+                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            });
+
+            actualizarListaClientes();
+        });
+    </script>
+</body>
+</html>
